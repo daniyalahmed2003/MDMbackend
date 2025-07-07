@@ -15,26 +15,27 @@ import {
   fetchNewProducts,
   filterProducts,
 } from "../controllers/productController.js";
+
 import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
 import checkId from "../middlewares/checkId.js";
 
-router
-  .route("/")
-  .get(fetchProducts)
-  .post(authenticate, authorizeAdmin, formidable(), addProduct);
-
+// ✅ specific routes first
+router.get("/top", fetchTopProducts);
+router.get("/new", fetchNewProducts);
+router.route("/filtered-products").post(filterProducts);
 router.route("/allproducts").get(fetchAllProducts);
 router.route("/:id/reviews").post(authenticate, checkId, addProductReview);
 
-router.get("/top", fetchTopProducts);
-router.get("/new", fetchNewProducts);
-
+// ✅ dynamic route last
 router
   .route("/:id")
   .get(fetchProductById)
   .put(authenticate, authorizeAdmin, formidable(), updateProductDetails)
   .delete(authenticate, authorizeAdmin, removeProduct);
 
-router.route("/filtered-products").post(filterProducts);
+router
+  .route("/")
+  .get(fetchProducts)
+  .post(authenticate, authorizeAdmin, formidable(), addProduct);
 
 export default router;
